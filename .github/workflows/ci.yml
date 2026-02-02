@@ -28,23 +28,30 @@ jobs:
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
         continue-on-error: true
       - name: Commit and push autofix changes
+        id: autofix
         if: steps.pre-commit.outcome == 'failure'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
           if git diff --staged --quiet; then
-            echo "No autofix changes to commit"
-            exit 1
+            echo "Pre-commit failed but no autofix changes were made"
+            echo "has_autofixes=false" >> $GITHUB_OUTPUT
           else
             git commit -m "style: apply pre-commit autofixes"
             git push
-            echo "Autofixes committed and pushed. Please re-run CI."
-            exit 1
+            echo "Autofixes committed and pushed. Re-run CI to verify."
+            echo "has_autofixes=true" >> $GITHUB_OUTPUT
           fi
       - name: Fail if pre-commit had errors
         if: steps.pre-commit.outcome == 'failure'
-        run: exit 1
+        run: |
+          if [ "${{ steps.autofix.outputs.has_autofixes }}" = "true" ]; then
+            echo "Pre-commit autofixes have been committed. Please re-run the CI workflow."
+          else
+            echo "Pre-commit checks failed without autofixes. Please fix the errors manually."
+          fi
+          exit 1
 
   # Make sure commit messages follow the conventional commits convention:
   # https://www.conventionalcommits.org
