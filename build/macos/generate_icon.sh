@@ -1,6 +1,7 @@
 #!/bin/bash
-# Generate application icon for macOS from SVG or PNG source
+# Generate application icon for macOS from PNG source
 # Creates .icns file with multiple resolutions
+# No external dependencies required (uses macOS built-in tools: sips and iconutil)
 
 set -e
 
@@ -10,26 +11,16 @@ ICON_OUTPUT="${SCRIPT_DIR}/SoVitsSVC-OSX.icns"
 
 echo "🎨 Generating macOS application icon..."
 
+# Check if we have the source icon
+if [ ! -f "$ICON_SOURCE" ]; then
+    echo "ERROR: Source icon not found: $ICON_SOURCE"
+    echo "A pre-built icon.png should be included in the repository."
+    exit 1
+fi
+
 # Create a temporary directory for icon generation
 ICONSET_DIR=$(mktemp -d)/SoVitsSVC-OSX.iconset
 mkdir -p "$ICONSET_DIR"
-
-# Check if we have a source icon, if not create a simple placeholder
-if [ ! -f "$ICON_SOURCE" ]; then
-    echo "  Creating placeholder icon..."
-    # Create a simple gradient icon using ImageMagick
-    convert -size 1024x1024 \
-        -define gradient:angle=135 \
-        gradient:'#4A90E2-#50C878' \
-        -gravity center \
-        -pointsize 240 \
-        -font Helvetica-Bold \
-        -fill white \
-        -annotate +0+0 'SVC' \
-        -pointsize 80 \
-        -annotate +0+200 'OSX' \
-        "$ICON_SOURCE"
-fi
 
 echo "  Generating icon set at multiple resolutions..."
 

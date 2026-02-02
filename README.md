@@ -16,11 +16,11 @@ This is a special fork optimized for macOS with **Apple Metal Performance Shader
 
 - 🚀 Native Apple Silicon (M1/M2/M3) optimization with MPS GPU acceleration
 - 🎵 Real-time voice conversion with low latency
-- 🖥️ Native macOS GUI built with PySimpleGUI
+- 🌐 Modern web-based UI with native window (pywebview)
 - 📦 Easy installation via DMG package
 - 🎙️ Microphone and audio device support
 - 🔧 Model training support
-- 🎨 Dark mode support
+- 🎨 macOS-inspired design
 
 **Quick Start:**
 
@@ -207,13 +207,25 @@ pip install -U so-vits-svc-fork
 
 #### GUI
 
-![GUI](https://raw.githubusercontent.com/voicepaw/so-vits-svc-fork/main/docs/_static/gui.png)
+The new web-based GUI provides a modern, intuitive interface with all the features of the original UI:
+
+- **Features**: Model configuration, real-time voice changing, file inference, preset management
+- **Design**: macOS-inspired styling with a clean, modern look
+- **Technology**: React + FastAPI served through pywebview for native window experience
 
 GUI launches with the following command:
 
 ```shell
 svcg
 ```
+
+Or:
+
+```shell
+svc gui
+```
+
+See [docs/WEB_UI.md](docs/WEB_UI.md) for more details about the web UI architecture.
 
 #### CLI
 
