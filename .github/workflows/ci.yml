@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   lint:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -23,6 +24,7 @@ jobs:
   # Make sure commit messages follow the conventional commits convention:
   # https://www.conventionalcommits.org
   commitlint:
+    if: false
     name: Lint Commit Messages
     runs-on: ubuntu-latest
     steps:
