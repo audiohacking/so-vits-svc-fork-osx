@@ -31,14 +31,6 @@ fi
 echo "Using Python: $($PYTHON --version)"
 echo ""
 
-# Install system dependencies for icon generation
-echo "Checking system dependencies..."
-if ! command -v convert &> /dev/null; then
-    echo "WARNING: ImageMagick not found"
-    echo "Install with: brew install imagemagick"
-    echo ""
-fi
-
 # Install Python dependencies
 echo "Installing Python dependencies..."
 $PYTHON -m pip install --upgrade pip

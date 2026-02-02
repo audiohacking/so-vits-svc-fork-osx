@@ -42,16 +42,6 @@ jobs:
     - name: Display Python version
       run: python --version
       
-    - name: Install system dependencies for icon generation
-      run: |
-        # imagemagick for placeholder icon generation if needed
-        brew install imagemagick
-        # ghostscript for imagemagick delegate support
-        brew install ghostscript
-        # Add ghostscript to PATH for imagemagick delegate
-        echo "/opt/homebrew/bin" >> $GITHUB_PATH
-        export PATH="/opt/homebrew/bin:$PATH"
-        
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip

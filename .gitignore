@@ -11,6 +11,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!build/macos/
+build/macos/*.icns
 develop-eggs/
 dist/
 downloads/
@@ -169,7 +171,5 @@ filelists
 *.dmg
 dmg_temp/
 VERSION
-build/macos/icon.png
-build/macos/*.icns
 # Keep the build scripts but not generated files
 *.whl
