@@ -1,6 +1,26 @@
 name: Build macOS Release
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '.github/workflows/build-macos-release.yml'
+      - 'src/**'
+      - 'requirements_macos.txt'
+      - 'SoVitsSVC-OSX.spec'
+      - 'build/macos/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - '.github/workflows/build-macos-release.yml'
+      - 'src/**'
+      - 'requirements_macos.txt'
+      - 'SoVitsSVC-OSX.spec'
+      - 'build/macos/**'
   release:
     types: [created]
   workflow_dispatch:
@@ -46,6 +66,14 @@ jobs:
       run: |
         # imagemagick for placeholder icon generation if needed
         brew install imagemagick
+        # ghostscript for imagemagick delegate support
+        brew install ghostscript
+        # fonts for imagemagick text rendering
+        brew tap homebrew/cask-fonts
+        # Font installation may fail on some runners, but it's optional
+        if ! brew install --cask font-helvetica-neue; then
+          echo "::warning::Failed to install font-helvetica-neue. ImageMagick will use fallback fonts."
+        fi
         
     - name: Install Python dependencies
       run: |
@@ -77,6 +105,11 @@ jobs:
     - name: Clean previous PyInstaller outputs
       run: |
         rm -rf dist/SoVitsSVC-OSX.app build/SoVitsSVC-OSX
+
+    - name: Fix binary compatibility for universal2 build
+      run: |
+        # Force reinstall markupsafe as universal binary for macOS universal2 support
+        ARCHFLAGS='-arch arm64 -arch x86_64' pip install --force-reinstall --no-cache-dir markupsafe
 
     - name: Build with PyInstaller
       run: |
