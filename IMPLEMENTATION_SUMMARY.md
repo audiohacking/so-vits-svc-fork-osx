@@ -130,6 +130,7 @@ This project successfully implements a native macOS application for so-vits-svc-
 ✅ Comprehensive documentation  
 ✅ Testing utilities  
 ✅ Build scripts  
+✅ **Local build automation** (`local_build.sh`)  
 ✅ Version management  
 ✅ Contributing guidelines  
 
@@ -137,6 +138,7 @@ This project successfully implements a native macOS application for so-vits-svc-
 
 ```
 so-vits-svc-fork-osx/
+├── local_build.sh                      # Automated local build script
 ├── .github/
 │   ├── workflows/
 │   │   └── build-macos-release.yml    # CI/CD pipeline
@@ -208,13 +210,18 @@ See `docs/QUICKSTART.md` for detailed instructions.
    pip install -e .
    ```
 
-3. **Test MPS**
+3. **Install dependencies**
    ```bash
-   python build/macos/test_mps.py
+   pip install -r requirements_macos.txt
+   pip install -e .
    ```
 
 4. **Build the app**
    ```bash
+   # Quick build (recommended)
+   ./local_build.sh
+   
+   # Or manual build
    ./build/macos/generate_icon.sh
    python -m PyInstaller SoVitsSVC-OSX.spec --clean
    ./build/macos/codesign.sh dist/SoVitsSVC-OSX.app

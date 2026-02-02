@@ -26,7 +26,12 @@ This is a special fork optimized for macOS with **Apple Metal Performance Shader
 2. Open the DMG and drag the app to Applications
 3. Launch and start converting!
 
-See [BUILD_MACOS.md](docs/BUILD_MACOS.md) for build instructions.
+**Build Locally:**
+```bash
+./local_build.sh
+```
+
+See [BUILD_MACOS.md](docs/BUILD_MACOS.md) for detailed build instructions.
 
 ---
 

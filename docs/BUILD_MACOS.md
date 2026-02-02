@@ -28,7 +28,27 @@ pip install -e .
 
 ## Local Build Process
 
-### 1. Generate Application Icon
+### Quick Build (Recommended)
+
+For the fastest local build experience, use the automated build script:
+
+```bash
+./local_build.sh
+```
+
+This script mirrors the GitHub Actions workflow and handles all build steps automatically, including:
+- Checking Python version
+- Installing dependencies
+- Generating icons
+- Building with PyInstaller
+- Code signing
+- Providing test instructions
+
+### Manual Build Process
+
+If you prefer to run each step manually:
+
+#### 1. Generate Application Icon
 
 ```bash
 chmod +x build/macos/generate_icon.sh
@@ -37,7 +57,7 @@ chmod +x build/macos/generate_icon.sh
 
 This creates `build/macos/SoVitsSVC-OSX.icns` from a source icon or generates a placeholder.
 
-### 2. Build with PyInstaller
+#### 2. Build with PyInstaller
 
 ```bash
 python -m PyInstaller SoVitsSVC-OSX.spec --clean --noconfirm
@@ -45,7 +65,7 @@ python -m PyInstaller SoVitsSVC-OSX.spec --clean --noconfirm
 
 This creates the application bundle at `dist/SoVitsSVC-OSX.app`.
 
-### 3. Set Up Executable
+#### 3. Set Up Executable
 
 ```bash
 # Copy the binary to the expected location
@@ -54,7 +74,7 @@ cp dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin \
 chmod +x dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX
 ```
 
-### 4. Code Sign (Optional but Recommended)
+#### 4. Code Sign (Optional but Recommended)
 
 ```bash
 chmod +x build/macos/codesign.sh
@@ -68,7 +88,7 @@ export MACOS_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAM_ID)"
 ./build/macos/codesign.sh dist/SoVitsSVC-OSX.app
 ```
 
-### 5. Create DMG (Optional)
+#### 5. Create DMG (Optional)
 
 ```bash
 # Create temporary directory
