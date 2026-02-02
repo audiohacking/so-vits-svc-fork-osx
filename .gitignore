@@ -172,3 +172,4 @@ VERSION
 build/macos/icon.png
 build/macos/*.icns
 # Keep the build scripts but not generated files
+*.whl
