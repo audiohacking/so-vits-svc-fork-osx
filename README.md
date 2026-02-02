@@ -13,6 +13,7 @@ This is a special fork optimized for macOS with **Apple Metal Performance Shader
 </a>
 
 **Features:**
+
 - 🚀 Native Apple Silicon (M1/M2/M3) optimization with MPS GPU acceleration
 - 🎵 Real-time voice conversion with low latency
 - 🖥️ Native macOS GUI built with PySimpleGUI
@@ -22,11 +23,13 @@ This is a special fork optimized for macOS with **Apple Metal Performance Shader
 - 🎨 Dark mode support
 
 **Quick Start:**
+
 1. Download the DMG from the [releases page](https://github.com/audiohacking/so-vits-svc-fork-osx/releases)
 2. Open the DMG and drag the app to Applications
 3. Launch and start converting!
 
 **Build Locally:**
+
 ```bash
 ./local_build.sh
 ```

@@ -5,6 +5,7 @@ This guide explains how to build the so-vits-svc-fork OSX application locally or
 ## Prerequisites
 
 ### System Requirements
+
 - macOS 11.0 (Big Sur) or later
 - Python 3.11
 - Xcode Command Line Tools
@@ -37,6 +38,7 @@ For the fastest local build experience, use the automated build script:
 ```
 
 This script mirrors the GitHub Actions workflow and handles all build steps automatically, including:
+
 - Checking Python version
 - Installing dependencies
 - Generating icons
@@ -113,6 +115,7 @@ The repository includes a GitHub Actions workflow that automatically builds and 
 ### Triggering a Build
 
 #### Option 1: Create a Release
+
 1. Go to the repository on GitHub
 2. Click "Releases" → "Create a new release"
 3. Tag version (e.g., `v1.0.0`)
@@ -120,6 +123,7 @@ The repository includes a GitHub Actions workflow that automatically builds and 
 5. The workflow automatically builds and attaches the DMG and ZIP files
 
 #### Option 2: Manual Workflow Dispatch
+
 1. Go to Actions → "Build macOS Release"
 2. Click "Run workflow"
 3. Enter a version tag (e.g., `v1.0.0-beta`)
@@ -163,6 +167,7 @@ In the GUI, ensure "Use GPU" checkbox is enabled (it should be by default on App
 ### "App is damaged and can't be opened"
 
 This happens with ad-hoc signed apps. Run:
+
 ```bash
 sudo xattr -cr dist/SoVitsSVC-OSX.app
 ```
@@ -176,15 +181,18 @@ sudo xattr -cr dist/SoVitsSVC-OSX.app
 ### Icon Generation Fails
 
 If `generate_icon.sh` fails:
+
 - Ensure ImageMagick is installed: `brew install imagemagick`
 - Check for `build/macos/icon.png` or the script will create a placeholder
 
 ### Code Signing Issues
 
 For development:
+
 - Use ad-hoc signing: `MACOS_SIGNING_IDENTITY="-" ./build/macos/codesign.sh dist/SoVitsSVC-OSX.app`
 
 For distribution:
+
 - Ensure you have a valid Developer ID certificate
 - Check certificate: `security find-identity -v -p codesigning`
 
@@ -201,11 +209,13 @@ For distribution:
 The default build creates a Universal 2 binary. To target only Apple Silicon:
 
 Edit `SoVitsSVC-OSX.spec`:
+
 ```python
 target_arch='arm64',  # Apple Silicon only
 ```
 
 Or for Intel only:
+
 ```python
 target_arch='x86_64',  # Intel only
 ```
@@ -217,6 +227,7 @@ Replace `build/macos/icon.png` with your custom 1024x1024 PNG icon before runnin
 ### PyInstaller Customization
 
 Edit `SoVitsSVC-OSX.spec` to:
+
 - Add more hidden imports
 - Include additional data files
 - Customize app metadata
@@ -225,6 +236,7 @@ Edit `SoVitsSVC-OSX.spec` to:
 ## CI/CD Integration
 
 The workflow is configured to:
+
 1. Build on every release
 2. Create DMG and ZIP distributions
 3. Generate SHA-256 checksums
@@ -250,6 +262,7 @@ Before distributing the app:
 ## Support
 
 For build issues or questions:
+
 - Open an issue on GitHub
 - Check existing issues for solutions
 - Review PyInstaller documentation for advanced topics

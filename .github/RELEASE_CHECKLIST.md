@@ -5,6 +5,7 @@ Use this checklist when preparing a new release of the macOS application.
 ## Pre-Release Testing
 
 ### Local Build Testing
+
 - [ ] Clean previous builds: `rm -rf build dist`
 - [ ] Generate icon: `./build/macos/generate_icon.sh`
 - [ ] Build with PyInstaller: `python -m PyInstaller SoVitsSVC-OSX.spec --clean`
@@ -13,6 +14,7 @@ Use this checklist when preparing a new release of the macOS application.
 - [ ] Test app launches: `open dist/SoVitsSVC-OSX.app`
 
 ### Functionality Testing
+
 - [ ] Test MPS detection: `python build/macos/test_mps.py`
 - [ ] Test file inference (load model, convert audio)
 - [ ] Test real-time conversion (microphone input)
@@ -21,12 +23,14 @@ Use this checklist when preparing a new release of the macOS application.
 - [ ] Check Console.app for errors
 
 ### Platform Testing
+
 - [ ] Test on Apple Silicon Mac (M1/M2/M3)
 - [ ] Test on Intel Mac (if available)
 - [ ] Test on macOS 11 (Big Sur) or latest available
 - [ ] Test on macOS 12+ (Monterey, Ventura, Sonoma)
 
 ### DMG Testing
+
 - [ ] Create DMG: `hdiutil create...`
 - [ ] Mount DMG and test drag-to-install
 - [ ] Verify README.txt displays correctly
@@ -36,6 +40,7 @@ Use this checklist when preparing a new release of the macOS application.
 ## Version Management
 
 ### Update Version Numbers
+
 - [ ] Update version in `SoVitsSVC-OSX.spec`
   - `CFBundleVersion`
   - `CFBundleShortVersionString`
@@ -43,6 +48,7 @@ Use this checklist when preparing a new release of the macOS application.
 - [ ] Or use: `python build/macos/update_version.py X.Y.Z`
 
 ### Update Documentation
+
 - [ ] Update `CHANGELOG_MACOS.md` with new changes
 - [ ] Review and update `README.md` if needed
 - [ ] Check all documentation is current
@@ -51,6 +57,7 @@ Use this checklist when preparing a new release of the macOS application.
 ## Code Quality
 
 ### Run Checks
+
 - [ ] Code review passed (automatic)
 - [ ] Security scan passed: CodeQL (automatic)
 - [ ] No console errors or warnings
@@ -58,6 +65,7 @@ Use this checklist when preparing a new release of the macOS application.
 - [ ] .gitignore is up to date
 
 ### Clean Up
+
 - [ ] Remove any debug print statements
 - [ ] Remove temporary files
 - [ ] Check for sensitive data
@@ -66,12 +74,14 @@ Use this checklist when preparing a new release of the macOS application.
 ## GitHub Release Preparation
 
 ### Repository
+
 - [ ] All changes committed and pushed
 - [ ] Branch is up to date with main
 - [ ] No merge conflicts
 - [ ] CI/CD workflow file is correct
 
 ### Release Notes
+
 - [ ] Prepare release notes (use `CHANGELOG_MACOS.md`)
 - [ ] List new features
 - [ ] List bug fixes
@@ -83,6 +93,7 @@ Use this checklist when preparing a new release of the macOS application.
 ## Create Release
 
 ### GitHub Release
+
 1. [ ] Go to GitHub repository → Releases
 2. [ ] Click "Draft a new release"
 3. [ ] Choose a tag: `vX.Y.Z` (e.g., `v1.0.0`)
@@ -93,6 +104,7 @@ Use this checklist when preparing a new release of the macOS application.
 8. [ ] Publish release
 
 ### Automated Build
+
 - [ ] GitHub Actions workflow triggered
 - [ ] Build completes successfully
 - [ ] DMG artifact created
@@ -101,6 +113,7 @@ Use this checklist when preparing a new release of the macOS application.
 - [ ] Assets attached to release
 
 ### Manual Build (if automated fails)
+
 ```bash
 # Build locally
 ./build/macos/generate_icon.sh
@@ -128,6 +141,7 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 ## Post-Release Validation
 
 ### Download Testing
+
 - [ ] Download DMG from release page
 - [ ] Download ZIP from release page
 - [ ] Verify checksums match
@@ -135,6 +149,7 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 - [ ] Test ZIP extraction and installation
 
 ### Fresh Installation Testing
+
 - [ ] Install on fresh Mac (or clean /Applications)
 - [ ] Launch and grant permissions
 - [ ] Test basic functionality
@@ -142,6 +157,7 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 - [ ] Check for any security warnings
 
 ### Documentation
+
 - [ ] Update README.md download links (if needed)
 - [ ] Announce release (if applicable)
 - [ ] Update any external documentation
@@ -149,11 +165,13 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 ## Communication
 
 ### Internal
+
 - [ ] Notify team of release
 - [ ] Update project status
 - [ ] Document any issues found
 
 ### External (Optional)
+
 - [ ] Post release announcement
 - [ ] Update social media
 - [ ] Notify community
@@ -162,6 +180,7 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 ## Monitoring
 
 ### Post-Release
+
 - [ ] Monitor GitHub Issues for bug reports
 - [ ] Check for crash reports
 - [ ] Respond to user feedback
@@ -169,6 +188,7 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 - [ ] Note any patterns in issues
 
 ### Follow-Up
+
 - [ ] Plan next release if needed
 - [ ] Address critical bugs immediately
 - [ ] Schedule bug-fix release if necessary
@@ -177,17 +197,20 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 ## Version Numbering Guide
 
 ### Semantic Versioning (X.Y.Z)
+
 - **X (Major)**: Breaking changes, major new features
 - **Y (Minor)**: New features, backward compatible
 - **Z (Patch)**: Bug fixes, small improvements
 
 ### Examples
+
 - `1.0.0`: Initial stable release
 - `1.0.1`: Bug fix release
 - `1.1.0`: New feature added
 - `2.0.0`: Major update with breaking changes
 
 ### Pre-Release Tags
+
 - `v1.0.0-alpha.1`: Early alpha
 - `v1.0.0-beta.1`: Feature complete, testing
 - `v1.0.0-rc.1`: Release candidate
@@ -195,24 +218,28 @@ shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
 ## Troubleshooting
 
 ### Build Fails
+
 - Check Python version (3.11)
 - Verify all dependencies installed
 - Check PyInstaller logs
 - Try clean build: `rm -rf build dist`
 
 ### GitHub Actions Fails
+
 - Check workflow logs
 - Verify secrets are set (if needed)
 - Check for API rate limits
 - Try manual workflow dispatch
 
 ### Code Signing Issues
+
 - Verify certificate is valid
 - Check entitlements are correct
 - Try ad-hoc signing for testing
 - Check Keychain Access
 
 ### DMG Creation Fails
+
 - Check disk space
 - Verify all files exist
 - Check folder structure
