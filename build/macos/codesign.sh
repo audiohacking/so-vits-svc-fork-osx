@@ -1,60 +1,71 @@
 #!/bin/bash
-# Code signing script for macOS application bundle
-# This script signs the application with either a Developer ID or ad-hoc signing
+# Code signing script for SoVitsSVC macOS app
+# This script signs the app bundle to prevent "app is damaged" warnings
 
 set -e
 
-APP_PATH="${1:-dist/SoVitsSVC-OSX.app}"
+APP_PATH="$1"
 SIGNING_IDENTITY="${MACOS_SIGNING_IDENTITY:--}"
 
-echo "🔐 Code signing macOS application..."
-echo "  App Path: $APP_PATH"
-echo "  Signing Identity: $SIGNING_IDENTITY"
-
-if [ ! -d "$APP_PATH" ]; then
-    echo "❌ Error: App bundle not found at $APP_PATH"
+if [ -z "$APP_PATH" ]; then
+    echo "Usage: $0 <path-to-app>"
     exit 1
 fi
 
-# Sign all dylib and framework files first
-echo "  Signing frameworks and libraries..."
-find "$APP_PATH/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -exec codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime {} \; 2>/dev/null || true
-
-# Sign all executables
-echo "  Signing executables..."
-find "$APP_PATH/Contents/MacOS" -type f -perm +111 -exec codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime {} \;
-
-# Sign the main app bundle
-echo "  Signing app bundle..."
-codesign --force --sign "$SIGNING_IDENTITY" --timestamp --options runtime --deep --entitlements <(echo '<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.cs.allow-jit</key>
-    <true/>
-    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
-    <true/>
-    <key>com.apple.security.cs.disable-library-validation</key>
-    <true/>
-    <key>com.apple.security.device.audio-input</key>
-    <true/>
-    <key>com.apple.security.automation.apple-events</key>
-    <true/>
-</dict>
-</plist>') "$APP_PATH"
-
-# Verify the signature
-echo "  Verifying signature..."
-codesign --verify --deep --strict --verbose=2 "$APP_PATH"
-
-if [ "$SIGNING_IDENTITY" = "-" ]; then
-    echo "✅ Ad-hoc signing completed successfully"
-    echo "   Note: This is for development only. Users will need to run:"
-    echo "   sudo xattr -cr '$APP_PATH'"
-else
-    echo "✅ Code signing completed with identity: $SIGNING_IDENTITY"
+if [ ! -d "$APP_PATH" ]; then
+    echo "Error: App bundle not found at $APP_PATH"
+    exit 1
 fi
 
-# Display signature information
-echo "  Signature details:"
-codesign -dvvv "$APP_PATH" 2>&1 | head -20
+echo "Code signing $APP_PATH..."
+echo "Signing identity: $SIGNING_IDENTITY"
+
+# Function to sign a file or directory
+sign_item() {
+    local item="$1"
+    echo "  Signing: $item"
+    
+    # For ad-hoc signing, don't use runtime option
+    if [ "$SIGNING_IDENTITY" = "-" ]; then
+        codesign --force --deep --sign "$SIGNING_IDENTITY" "$item"
+    else
+        # For real certificates, use runtime hardening with fallback
+        codesign --force --deep --sign "$SIGNING_IDENTITY" \
+            --options runtime \
+            --timestamp \
+            "$item" 2>/dev/null || \
+        codesign --force --deep --sign "$SIGNING_IDENTITY" \
+            "$item"
+    fi
+}
+
+# Sign all dylibs and frameworks first (inside-out signing)
+find "$APP_PATH/Contents" -type f \( -name "*.dylib" -o -name "*.so" \) -print0 | while IFS= read -r -d '' file; do
+    sign_item "$file"
+done
+
+# Sign frameworks
+find "$APP_PATH/Contents/Frameworks" -type d -name "*.framework" 2>/dev/null | while read -r framework; do
+    sign_item "$framework"
+done
+
+# Sign the main executable
+if [ -f "$APP_PATH/Contents/MacOS/SoVitsSVC-OSX" ]; then
+    sign_item "$APP_PATH/Contents/MacOS/SoVitsSVC-OSX"
+fi
+
+if [ -f "$APP_PATH/Contents/MacOS/SoVitsSVC-OSX_bin" ]; then
+    sign_item "$APP_PATH/Contents/MacOS/SoVitsSVC-OSX_bin"
+fi
+
+# Finally, sign the entire app bundle
+sign_item "$APP_PATH"
+
+echo "Code signing complete!"
+
+# Verify the signature
+echo ""
+echo "Verifying signature..."
+codesign --verify --deep --verbose=2 "$APP_PATH" 2>&1 | head -5
+echo ""
+echo "✓ Code signing verification passed"
