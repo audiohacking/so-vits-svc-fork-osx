@@ -15,7 +15,7 @@ app_name = 'SoVitsSVC-OSX'
 
 # Analysis configuration
 a = Analysis(
-    ['src/so_vits_svc_fork/gui.py'],
+    ['src/so_vits_svc_fork/gui_web.py'],
     pathex=[str(project_root / 'src')],
     binaries=[],
     datas=[
@@ -23,10 +23,14 @@ a = Analysis(
         ('src/so_vits_svc_fork/default_gui_presets.json', 'so_vits_svc_fork'),
         # Include config templates
         ('src/so_vits_svc_fork/preprocessing/config_templates', 'so_vits_svc_fork/preprocessing/config_templates'),
+        # Include the web UI files
+        ('src/so_vits_svc_fork/webui', 'so_vits_svc_fork/webui'),
     ],
     hiddenimports=[
         'so_vits_svc_fork',
-        'so_vits_svc_fork.gui',
+        'so_vits_svc_fork.gui_web',
+        'so_vits_svc_fork.webui',
+        'so_vits_svc_fork.webui.server',
         'so_vits_svc_fork.__main__',
         'so_vits_svc_fork.inference.main',
         'so_vits_svc_fork.inference.core',
@@ -48,8 +52,18 @@ a = Analysis(
         'tensorboard',
         'tensorboardx',
         'lightning',
-        'PySimpleGUI',
-        'pysimplegui_4_foss',
+        'pywebview',
+        'uvicorn',
+        'uvicorn.logging',
+        'uvicorn.loops',
+        'uvicorn.loops.auto',
+        'uvicorn.protocols',
+        'uvicorn.protocols.http',
+        'uvicorn.protocols.http.auto',
+        'uvicorn.protocols.websockets',
+        'uvicorn.protocols.websockets.auto',
+        'uvicorn.lifespan',
+        'uvicorn.lifespan.on',
         'click',
         'fastapi',
         'parselmouth',
