@@ -1,16 +1,27 @@
 from __future__ import annotations
 
 import multiprocessing
+import sys
 import threading
 import time
 from logging import getLogger
+from pathlib import Path
 
 import requests
 import uvicorn
 import webview
 
-from . import __version__
-from .webui.server import create_app
+# Handle both direct script execution and module execution
+try:
+    from . import __version__
+    from .webui.server import create_app
+except ImportError:
+    # Running as a script directly - add parent directory to path
+    src_path = Path(__file__).parent.parent
+    if str(src_path) not in sys.path:
+        sys.path.insert(0, str(src_path))
+    from so_vits_svc_fork import __version__
+    from so_vits_svc_fork.webui.server import create_app
 
 LOG = getLogger(__name__)
 
