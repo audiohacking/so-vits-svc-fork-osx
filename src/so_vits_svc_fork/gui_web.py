@@ -12,6 +12,9 @@ import uvicorn
 import webview
 
 # Handle both direct script execution and module execution
+# Define package name for fallback import logic
+_PACKAGE_NAME = "so_vits_svc_fork"
+
 try:
     from . import __version__
     from .webui.server import create_app
@@ -21,10 +24,10 @@ except ImportError as e:
     src_path = Path(__file__).parent.parent
     
     # Validate that the expected package exists before modifying sys.path
-    expected_package = src_path / "so_vits_svc_fork" / "__init__.py"
+    expected_package = src_path / _PACKAGE_NAME / "__init__.py"
     if not expected_package.exists():
         raise ImportError(
-            f"Cannot locate so_vits_svc_fork package. Expected at {expected_package}. "
+            f"Cannot locate {_PACKAGE_NAME} package. Expected at {expected_package}. "
             f"Original error: {e}"
         ) from e
     
@@ -32,11 +35,13 @@ except ImportError as e:
         sys.path.insert(0, str(src_path))
     
     try:
-        from so_vits_svc_fork import __version__
+        # Import using absolute imports
+        import so_vits_svc_fork
         from so_vits_svc_fork.webui.server import create_app
+        __version__ = so_vits_svc_fork.__version__
     except ImportError as fallback_error:
         raise ImportError(
-            f"Failed to import so_vits_svc_fork after adding {src_path} to sys.path. "
+            f"Failed to import {_PACKAGE_NAME} after adding {src_path} to sys.path. "
             f"Original error: {e}. Fallback error: {fallback_error}"
         ) from fallback_error
 
