@@ -209,8 +209,8 @@ For distribution:
 If you see an error like `ModuleNotFoundError: No module named 'webview'` or similar at line 12/19:
 
 - This typically means PyObjC dependencies are missing
-- Solution: Install PyObjC: `pip install pyobjc-core pyobjc-framework-Cocoa pyobjc-framework-WebKit`
-- Or reinstall from requirements: `pip install -r requirements_macos.txt`
+- Solution: Reinstall from requirements: `pip install -r requirements_macos.txt`
+- Or install PyObjC manually: `pip install "pyobjc-core>=10.0" "pyobjc-framework-Cocoa>=10.0" "pyobjc-framework-WebKit>=10.0"`
 - When building with PyInstaller, ensure hidden imports in `SoVitsSVC-OSX.spec` include the PyObjC modules
 
 The pywebview library requires PyObjC on macOS to access the native Cocoa framework for window creation.
