@@ -88,7 +88,7 @@ exe = EXE(
     console=False,  # No console window
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='universal2',  # Universal binary for Intel and Apple Silicon
+    target_arch='arm64',  # Target macOS Arm64 (Apple Silicon)
     codesign_identity=None,
     entitlements_file=None,
 )

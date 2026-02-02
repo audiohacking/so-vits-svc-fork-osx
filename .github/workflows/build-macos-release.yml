@@ -61,20 +61,20 @@ jobs:
 
     - name: Generate app icon
       run: |
-        chmod +x build/macos/generate_icon.sh
-        ./build/macos/generate_icon.sh
+        chmod +x ${GITHUB_WORKSPACE}/build/macos/generate_icon.sh
+        ${GITHUB_WORKSPACE}/build/macos/generate_icon.sh
 
     - name: Verify build assets
       run: |
-        if [ ! -f "build/macos/SoVitsSVC-OSX.icns" ]; then
+        if [ ! -f "${GITHUB_WORKSPACE}/build/macos/SoVitsSVC-OSX.icns" ]; then
           echo "::error::build/macos/SoVitsSVC-OSX.icns not found after generation."
           exit 1
         fi
-        if [ ! -f "build/macos/codesign.sh" ]; then
+        if [ ! -f "${GITHUB_WORKSPACE}/build/macos/codesign.sh" ]; then
           echo "::error::build/macos/codesign.sh not found."
           exit 1
         fi
-        if [ ! -f ".github/DMG_README.txt" ]; then
+        if [ ! -f "${GITHUB_WORKSPACE}/.github/DMG_README.txt" ]; then
           echo "::error::.github/DMG_README.txt not found."
           exit 1
         fi
@@ -82,13 +82,6 @@ jobs:
     - name: Clean previous PyInstaller outputs
       run: |
         rm -rf dist/SoVitsSVC-OSX.app build/SoVitsSVC-OSX
-
-    - name: Fix binary compatibility for universal2 build
-      run: |
-        # Force reinstall markupsafe as universal binary for macOS universal2 support
-        # We need to compile it from source to get universal2 binaries
-        pip uninstall -y markupsafe
-        ARCHFLAGS='-arch arm64 -arch x86_64' pip install --no-binary :all: --force-reinstall --no-cache-dir markupsafe
 
     - name: Build with PyInstaller
       run: |
@@ -104,8 +97,8 @@ jobs:
         
     - name: Code sign the app bundle
       run: |
-        chmod +x build/macos/codesign.sh
-        ./build/macos/codesign.sh dist/SoVitsSVC-OSX.app
+        chmod +x ${GITHUB_WORKSPACE}/build/macos/codesign.sh
+        ${GITHUB_WORKSPACE}/build/macos/codesign.sh dist/SoVitsSVC-OSX.app
       env:
         MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY || '-' }}
         
@@ -122,7 +115,7 @@ jobs:
         ln -s /Applications dmg_temp/Applications
         
         # Copy README
-        cp .github/DMG_README.txt dmg_temp/README.txt
+        cp ${GITHUB_WORKSPACE}/.github/DMG_README.txt dmg_temp/README.txt
         
         # Create DMG
         hdiutil create -volname "so-vits-svc OSX" \
