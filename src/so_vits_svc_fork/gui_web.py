@@ -15,13 +15,30 @@ import webview
 try:
     from . import __version__
     from .webui.server import create_app
-except ImportError:
+except ImportError as e:
     # Running as a script directly - add parent directory to path
+    # This allows: python src/so_vits_svc_fork/gui_web.py
     src_path = Path(__file__).parent.parent
+    
+    # Validate that the expected package exists before modifying sys.path
+    expected_package = src_path / "so_vits_svc_fork" / "__init__.py"
+    if not expected_package.exists():
+        raise ImportError(
+            f"Cannot locate so_vits_svc_fork package. Expected at {expected_package}. "
+            f"Original error: {e}"
+        ) from e
+    
     if str(src_path) not in sys.path:
         sys.path.insert(0, str(src_path))
-    from so_vits_svc_fork import __version__
-    from so_vits_svc_fork.webui.server import create_app
+    
+    try:
+        from so_vits_svc_fork import __version__
+        from so_vits_svc_fork.webui.server import create_app
+    except ImportError as fallback_error:
+        raise ImportError(
+            f"Failed to import so_vits_svc_fork after adding {src_path} to sys.path. "
+            f"Original error: {e}. Fallback error: {fallback_error}"
+        ) from fallback_error
 
 LOG = getLogger(__name__)
 
