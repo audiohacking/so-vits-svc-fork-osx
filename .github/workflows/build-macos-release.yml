@@ -1,26 +1,6 @@
 name: Build macOS Release
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-    paths:
-      - '.github/workflows/build-macos-release.yml'
-      - 'src/**'
-      - 'requirements_macos.txt'
-      - 'SoVitsSVC-OSX.spec'
-      - 'build/macos/**'
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - '.github/workflows/build-macos-release.yml'
-      - 'src/**'
-      - 'requirements_macos.txt'
-      - 'SoVitsSVC-OSX.spec'
-      - 'build/macos/**'
   release:
     types: [created]
   workflow_dispatch:
