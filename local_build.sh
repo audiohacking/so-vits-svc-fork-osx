@@ -75,11 +75,14 @@ $PYTHON -m PyInstaller SoVitsSVC-OSX.spec --clean --noconfirm
 
 echo ""
 
-# Set up app bundle executable
-echo "Setting up app bundle executable..."
+# Verify executable and set permissions
+echo "Verifying executable and setting permissions..."
 if [ -f "dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin" ]; then
-    cp dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX
-    chmod +x dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX
+    chmod +x dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin
+    echo "✓ Executable verified and permissions set"
+else
+    echo "ERROR: Executable 'SoVitsSVC-OSX_bin' not found!"
+    exit 1
 fi
 
 # Code sign the app bundle
