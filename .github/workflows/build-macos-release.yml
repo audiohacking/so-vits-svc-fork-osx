@@ -68,9 +68,9 @@ jobs:
         brew install imagemagick
         # ghostscript for imagemagick delegate support
         brew install ghostscript
-        # fonts for imagemagick text rendering
-        # font-helvetica-neue tap deprecated, fallback or skip installation
-        echo "::warning::Skipping font-helvetica-neue install. The tap is deprecated (homebrew/cask-fonts)."
+        # Add ghostscript to PATH for imagemagick delegate
+        echo "/opt/homebrew/bin" >> $GITHUB_PATH
+        export PATH="/opt/homebrew/bin:$PATH"
         
     - name: Install Python dependencies
       run: |
@@ -106,7 +106,9 @@ jobs:
     - name: Fix binary compatibility for universal2 build
       run: |
         # Force reinstall markupsafe as universal binary for macOS universal2 support
-        ARCHFLAGS='-arch arm64 -arch x86_64' pip install --force-reinstall --no-cache-dir markupsafe
+        # We need to compile it from source to get universal2 binaries
+        pip uninstall -y markupsafe
+        ARCHFLAGS='-arch arm64 -arch x86_64' pip install --no-binary :all: --force-reinstall --no-cache-dir markupsafe
 
     - name: Build with PyInstaller
       run: |
