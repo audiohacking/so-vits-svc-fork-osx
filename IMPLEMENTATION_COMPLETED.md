@@ -49,14 +49,23 @@ All features from the original PySimpleGUI interface were preserved:
 ## Key Benefits
 
 ### Reduced Dependencies
-**Before:**
+**Python Dependencies Removed:**
 - pysimplegui-4-foss (large GUI framework)
 
-**After:**
+**Python Dependencies Added:**
 - pywebview (lightweight native window wrapper)
 - uvicorn (already using FastAPI)
 
-**Net Result:** Smaller package size, fewer dependencies
+**System Dependencies Removed:**
+- ImageMagick (~100MB)
+- Ghostscript (~100MB)
+- Total: ~200MB of build dependencies removed
+
+**Net Result:** 
+- Smaller package size
+- Faster builds (no need to install ImageMagick/Ghostscript)
+- Fewer dependencies to maintain
+- Pre-built icon instead of runtime generation
 
 ### No Build Steps
 - React loaded via CDN (unpkg.com)
@@ -102,12 +111,21 @@ All features from the original PySimpleGUI interface were preserved:
    - Architecture overview
    - Usage instructions
 
+5. `build/macos/icon.png` (5KB)
+   - Pre-built application icon with purple gradient
+   - Matches web UI color scheme
+   - Generated once using Python stdlib (no ImageMagick needed)
+
 ### Files Modified
 - `pyproject.toml` - Updated dependencies
 - `requirements_macos.txt` - Updated dependencies
 - `SoVitsSVC-OSX.spec` - Updated PyInstaller config
 - `src/so_vits_svc_fork/__main__.py` - Updated gui command
 - `README.md` - Updated documentation
+- `.github/workflows/build-macos-release.yml` - Removed ImageMagick/Ghostscript
+- `local_build.sh` - Removed ImageMagick dependency check
+- `build/macos/generate_icon.sh` - Updated to use pre-built icon
+- `.gitignore` - Allow build/macos/ files (except generated .icns)
 
 ### Files Deleted
 - `src/so_vits_svc_fork/gui.py` - Old PySimpleGUI interface (767 lines)
