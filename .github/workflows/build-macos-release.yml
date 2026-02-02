@@ -64,10 +64,6 @@ jobs:
           echo "::error::build/macos/codesign.sh not found."
           exit 1
         fi
-        if [ ! -f "${GITHUB_WORKSPACE}/.github/DMG_README.txt" ]; then
-          echo "::error::.github/DMG_README.txt not found."
-          exit 1
-        fi
 
     - name: Clean previous PyInstaller outputs
       run: |
@@ -104,8 +100,10 @@ jobs:
         # Create Applications symlink for easy installation
         ln -s /Applications dmg_temp/Applications
         
-        # Copy README
-        cp ${GITHUB_WORKSPACE}/.github/DMG_README.txt dmg_temp/README.txt
+        # Copy README if available
+        if [ -f "${GITHUB_WORKSPACE}/.github/DMG_README.txt" ]; then
+          cp ${GITHUB_WORKSPACE}/.github/DMG_README.txt dmg_temp/README.txt
+        fi
         
         # Create DMG
         hdiutil create -volname "so-vits-svc OSX" \
