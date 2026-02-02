@@ -1,0 +1,154 @@
+name: Build macOS Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0-macos'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-macos:
+    name: Build macOS Application
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set version from release tag
+      run: |
+        if [ "${{ github.event_name }}" == "release" ]; then
+          VERSION="${{ github.event.release.tag_name }}"
+        else
+          VERSION="${{ github.event.inputs.version }}"
+        fi
+        echo "Setting version to: $VERSION"
+        echo "$VERSION" > VERSION
+        cat VERSION
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Display Python version
+      run: python --version
+      
+    - name: Install system dependencies for icon generation
+      run: |
+        # imagemagick for placeholder icon generation if needed
+        brew install imagemagick
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_macos.txt
+        # Install the package itself
+        pip install -e .
+
+    - name: Generate app icon
+      run: |
+        chmod +x build/macos/generate_icon.sh
+        ./build/macos/generate_icon.sh
+
+    - name: Verify build assets
+      run: |
+        if [ ! -f "build/macos/SoVitsSVC-OSX.icns" ]; then
+          echo "::error::build/macos/SoVitsSVC-OSX.icns not found after generation."
+          exit 1
+        fi
+        if [ ! -f "build/macos/codesign.sh" ]; then
+          echo "::error::build/macos/codesign.sh not found."
+          exit 1
+        fi
+        if [ ! -f ".github/DMG_README.txt" ]; then
+          echo "::error::.github/DMG_README.txt not found."
+          exit 1
+        fi
+
+    - name: Clean previous PyInstaller outputs
+      run: |
+        rm -rf dist/SoVitsSVC-OSX.app build/SoVitsSVC-OSX
+
+    - name: Build with PyInstaller
+      run: |
+        python -m PyInstaller SoVitsSVC-OSX.spec --clean --noconfirm
+
+    - name: Set up app bundle executable
+      run: |
+        # Ensure the main executable is properly set up
+        if [ -f "dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin" ]; then
+          cp dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX
+          chmod +x dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX
+        fi
+        
+    - name: Code sign the app bundle
+      run: |
+        chmod +x build/macos/codesign.sh
+        ./build/macos/codesign.sh dist/SoVitsSVC-OSX.app
+      env:
+        MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY || '-' }}
+        
+    - name: Create DMG (macOS disk image)
+      run: |
+        mkdir -p dmg_temp
+        cp -R dist/SoVitsSVC-OSX.app dmg_temp/
+        
+        # Copy the launcher command file
+        cp SoVitsSVC-OSX.command dmg_temp/
+        chmod +x dmg_temp/SoVitsSVC-OSX.command
+        
+        # Create Applications symlink for easy installation
+        ln -s /Applications dmg_temp/Applications
+        
+        # Copy README
+        cp .github/DMG_README.txt dmg_temp/README.txt
+        
+        # Create DMG
+        hdiutil create -volname "so-vits-svc OSX" \
+          -srcfolder dmg_temp \
+          -ov -format UDZO \
+          SoVitsSVC-OSX-macOS.dmg
+          
+    - name: Create ZIP archive (alternative distribution)
+      run: |
+        cd dist
+        zip -r ../SoVitsSVC-OSX-macOS.zip SoVitsSVC-OSX.app
+        cd ..
+        
+    - name: Calculate checksums
+      run: |
+        shasum -a 256 SoVitsSVC-OSX-macOS.dmg > checksums.txt
+        shasum -a 256 SoVitsSVC-OSX-macOS.zip >> checksums.txt
+        cat checksums.txt
+        
+    - name: Upload DMG artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SoVitsSVC-OSX-macOS-DMG
+        path: SoVitsSVC-OSX-macOS.dmg
+        
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SoVitsSVC-OSX-macOS-ZIP
+        path: SoVitsSVC-OSX-macOS.zip
+        
+    - name: Upload to Release (if triggered by release)
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          SoVitsSVC-OSX-macOS.dmg
+          SoVitsSVC-OSX-macOS.zip
+          checksums.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
