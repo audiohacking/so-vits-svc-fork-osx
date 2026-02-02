@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So-VITS-SVC Fork</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        #root {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .app-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .app-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .file-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .file-input-group input {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .notes-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #856404;
+        }
+
+        .notes-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #664d03;
+        }
+
+        .preset-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .preset-group select {
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .app-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            // Paths state
+            const [modelPath, setModelPath] = useState('');
+            const [configPath, setConfigPath] = useState('');
+            const [clusterModelPath, setClusterModelPath] = useState('');
+            
+            // Common settings
+            const [speaker, setSpeaker] = useState('');
+            const [speakers, setSpeakers] = useState([]);
+            const [silenceThreshold, setSilenceThreshold] = useState(-35);
+            const [transpose, setTranspose] = useState(0);
+            const [autoPredictF0, setAutoPredictF0] = useState(true);
+            const [f0Method, setF0Method] = useState('dio');
+            const [clusterInferRatio, setClusterInferRatio] = useState(0);
+            const [noiseScale, setNoiseScale] = useState(0.4);
+            const [padSeconds, setPadSeconds] = useState(0.1);
+            const [chunkSeconds, setChunkSeconds] = useState(0.5);
+            const [maxChunkSeconds, setMaxChunkSeconds] = useState(40);
+            const [absoluteThresh, setAbsoluteThresh] = useState(true);
+            
+            // File settings
+            const [inputPath, setInputPath] = useState('');
+            const [outputPath, setOutputPath] = useState('');
+            const [autoPlay, setAutoPlay] = useState(true);
+            
+            // Realtime settings
+            const [crossfadeSeconds, setCrossfadeSeconds] = useState(0.05);
+            const [blockSeconds, setBlockSeconds] = useState(0.35);
+            const [additionalInferBeforeSeconds, setAdditionalInferBeforeSeconds] = useState(0.15);
+            const [additionalInferAfterSeconds, setAdditionalInferAfterSeconds] = useState(0.1);
+            const [realtimeAlgorithm, setRealtimeAlgorithm] = useState('1');
+            const [inputDevice, setInputDevice] = useState('');
+            const [outputDevice, setOutputDevice] = useState('');
+            const [inputDevices, setInputDevices] = useState([]);
+            const [outputDevices, setOutputDevices] = useState([]);
+            const [passthroughOriginal, setPassthroughOriginal] = useState(false);
+            
+            // Preset settings
+            const [presets, setPresets] = useState({});
+            const [selectedPreset, setSelectedPreset] = useState('');
+            const [newPresetName, setNewPresetName] = useState('');
+            
+            // UI state
+            const [useGpu, setUseGpu] = useState(true);
+            const [statusMessage, setStatusMessage] = useState('');
+            const [statusType, setStatusType] = useState('');
+            const [isInferring, setIsInferring] = useState(false);
+            const [isVCRunning, setIsVCRunning] = useState(false);
+
+            // Load initial data
+            useEffect(() => {
+                loadPresets();
+                loadDevices();
+                loadDefaultPaths();
+            }, []);
+
+            // Update speakers when config changes
+            useEffect(() => {
+                if (configPath) {
+                    loadSpeakers();
+                }
+            }, [configPath]);
+
+            const loadPresets = async () => {
+                try {
+                    const response = await fetch('/api/presets');
+                    const data = await response.json();
+                    setPresets(data);
+                    const presetNames = Object.keys(data);
+                    if (presetNames.length > 0) {
+                        setSelectedPreset(presetNames[0]);
+                        applyPreset(presetNames[0], data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load presets:', error);
+                }
+            };
+
+            const loadDevices = async () => {
+                try {
+                    const response = await fetch('/api/devices');
+                    const data = await response.json();
+                    setInputDevices(data.input_devices || []);
+                    setOutputDevices(data.output_devices || []);
+                    if (data.input_devices && data.input_devices.length > 0) {
+                        setInputDevice(data.input_devices[0]);
+                    }
+                    if (data.output_devices && data.output_devices.length > 0) {
+                        setOutputDevice(data.output_devices[0]);
+                    }
+                } catch (error) {
+                    console.error('Failed to load devices:', error);
+                }
+            };
+
+            const loadDefaultPaths = async () => {
+                try {
+                    const response = await fetch('/api/default-paths');
+                    const data = await response.json();
+                    if (data.model_path) setModelPath(data.model_path);
+                    if (data.config_path) setConfigPath(data.config_path);
+                    if (data.cluster_model_path) setClusterModelPath(data.cluster_model_path);
+                } catch (error) {
+                    console.error('Failed to load default paths:', error);
+                }
+            };
+
+            const loadSpeakers = async () => {
+                try {
+                    const response = await fetch(`/api/speakers?config_path=${encodeURIComponent(configPath)}`);
+                    const data = await response.json();
+                    setSpeakers(data.speakers || []);
+                    if (data.speakers && data.speakers.length > 0) {
+                        setSpeaker(data.speakers[0]);
+                    }
+                } catch (error) {
+                    console.error('Failed to load speakers:', error);
+                }
+            };
+
+            const applyPreset = (presetName, presetsData = presets) => {
+                const preset = presetsData[presetName];
+                if (!preset) return;
+
+                if (preset.silence_threshold !== undefined) setSilenceThreshold(preset.silence_threshold);
+                if (preset.transpose !== undefined) setTranspose(preset.transpose);
+                if (preset.auto_predict_f0 !== undefined) setAutoPredictF0(preset.auto_predict_f0);
+                if (preset.f0_method !== undefined) setF0Method(preset.f0_method);
+                if (preset.cluster_infer_ratio !== undefined) setClusterInferRatio(preset.cluster_infer_ratio);
+                if (preset.noise_scale !== undefined) setNoiseScale(preset.noise_scale);
+                if (preset.pad_seconds !== undefined) setPadSeconds(preset.pad_seconds);
+                if (preset.chunk_seconds !== undefined) setChunkSeconds(preset.chunk_seconds);
+                if (preset.absolute_thresh !== undefined) setAbsoluteThresh(preset.absolute_thresh);
+                if (preset.max_chunk_seconds !== undefined) setMaxChunkSeconds(preset.max_chunk_seconds);
+                if (preset.crossfade_seconds !== undefined) setCrossfadeSeconds(preset.crossfade_seconds);
+                if (preset.block_seconds !== undefined) setBlockSeconds(preset.block_seconds);
+                if (preset.additional_infer_before_seconds !== undefined) setAdditionalInferBeforeSeconds(preset.additional_infer_before_seconds);
+                if (preset.additional_infer_after_seconds !== undefined) setAdditionalInferAfterSeconds(preset.additional_infer_after_seconds);
+                if (preset.realtime_algorithm !== undefined) setRealtimeAlgorithm(preset.realtime_algorithm.charAt(0));
+                if (preset.passthrough_original !== undefined) setPassthroughOriginal(preset.passthrough_original);
+                if (preset.use_gpu !== undefined) setUseGpu(preset.use_gpu);
+                if (preset.auto_play !== undefined) setAutoPlay(preset.auto_play);
+            };
+
+            const handleInfer = async () => {
+                if (!inputPath) {
+                    showStatus('Please select an input file', 'error');
+                    return;
+                }
+
+                setIsInferring(true);
+                showStatus('Starting inference...', 'info');
+
+                try {
+                    const response = await fetch('/api/infer', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model_path: modelPath,
+                            config_path: configPath,
+                            cluster_model_path: clusterModelPath || null,
+                            input_path: inputPath,
+                            output_path: outputPath,
+                            speaker: speaker,
+                            transpose: transpose,
+                            auto_predict_f0: autoPredictF0,
+                            cluster_infer_ratio: clusterInferRatio,
+                            noise_scale: noiseScale,
+                            f0_method: f0Method,
+                            db_thresh: silenceThreshold,
+                            pad_seconds: padSeconds,
+                            chunk_seconds: chunkSeconds,
+                            absolute_thresh: absoluteThresh,
+                            max_chunk_seconds: maxChunkSeconds,
+                            use_gpu: useGpu,
+                            auto_play: autoPlay
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        showStatus('Inference completed successfully!', 'success');
+                    } else {
+                        showStatus(`Inference failed: ${data.error || 'Unknown error'}`, 'error');
+                    }
+                } catch (error) {
+                    showStatus(`Error: ${error.message}`, 'error');
+                } finally {
+                    setIsInferring(false);
+                }
+            };
+
+            const handleStartVC = async () => {
+                showStatus('Starting voice changer...', 'info');
+                setIsVCRunning(true);
+
+                try {
+                    const response = await fetch('/api/realtime/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model_path: modelPath,
+                            config_path: configPath,
+                            cluster_model_path: clusterModelPath || null,
+                            speaker: speaker,
+                            transpose: transpose,
+                            auto_predict_f0: autoPredictF0,
+                            cluster_infer_ratio: clusterInferRatio,
+                            noise_scale: noiseScale,
+                            f0_method: f0Method,
+                            db_thresh: silenceThreshold,
+                            pad_seconds: padSeconds,
+                            chunk_seconds: chunkSeconds,
+                            crossfade_seconds: crossfadeSeconds,
+                            additional_infer_before_seconds: additionalInferBeforeSeconds,
+                            additional_infer_after_seconds: additionalInferAfterSeconds,
+                            block_seconds: blockSeconds,
+                            version: parseInt(realtimeAlgorithm),
+                            input_device: inputDevice,
+                            output_device: outputDevice,
+                            use_gpu: useGpu,
+                            passthrough_original: passthroughOriginal
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        showStatus('Voice changer started!', 'success');
+                    } else {
+                        showStatus(`Failed to start: ${data.error || 'Unknown error'}`, 'error');
+                        setIsVCRunning(false);
+                    }
+                } catch (error) {
+                    showStatus(`Error: ${error.message}`, 'error');
+                    setIsVCRunning(false);
+                }
+            };
+
+            const handleStopVC = async () => {
+                try {
+                    const response = await fetch('/api/realtime/stop', { method: 'POST' });
+                    if (response.ok) {
+                        showStatus('Voice changer stopped', 'info');
+                    }
+                } catch (error) {
+                    showStatus(`Error: ${error.message}`, 'error');
+                } finally {
+                    setIsVCRunning(false);
+                }
+            };
+
+            const handleAddPreset = async () => {
+                if (!newPresetName) {
+                    showStatus('Please enter a preset name', 'error');
+                    return;
+                }
+
+                const preset = {
+                    silence_threshold: silenceThreshold,
+                    transpose: transpose,
+                    auto_predict_f0: autoPredictF0,
+                    f0_method: f0Method,
+                    cluster_infer_ratio: clusterInferRatio,
+                    noise_scale: noiseScale,
+                    pad_seconds: padSeconds,
+                    chunk_seconds: chunkSeconds,
+                    absolute_thresh: absoluteThresh,
+                    max_chunk_seconds: maxChunkSeconds,
+                    crossfade_seconds: crossfadeSeconds,
+                    block_seconds: blockSeconds,
+                    additional_infer_before_seconds: additionalInferBeforeSeconds,
+                    additional_infer_after_seconds: additionalInferAfterSeconds,
+                    realtime_algorithm: `${realtimeAlgorithm} (Divide ${realtimeAlgorithm === '1' ? 'constantly' : 'by speech'})`,
+                    passthrough_original: passthroughOriginal,
+                    use_gpu: useGpu,
+                    auto_play: autoPlay
+                };
+
+                try {
+                    const response = await fetch('/api/presets', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: newPresetName, preset })
+                    });
+
+                    if (response.ok) {
+                        showStatus('Preset added successfully!', 'success');
+                        loadPresets();
+                        setNewPresetName('');
+                    } else {
+                        showStatus('Failed to add preset', 'error');
+                    }
+                } catch (error) {
+                    showStatus(`Error: ${error.message}`, 'error');
+                }
+            };
+
+            const handleDeletePreset = async () => {
+                if (!selectedPreset) {
+                    showStatus('Please select a preset to delete', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/presets/${encodeURIComponent(selectedPreset)}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showStatus('Preset deleted successfully!', 'success');
+                        loadPresets();
+                    } else {
+                        showStatus('Failed to delete preset', 'error');
+                    }
+                } catch (error) {
+                    showStatus(`Error: ${error.message}`, 'error');
+                }
+            };
+
+            const showStatus = (message, type) => {
+                setStatusMessage(message);
+                setStatusType(type);
+                setTimeout(() => {
+                    setStatusMessage('');
+                    setStatusType('');
+                }, 5000);
+            };
+
+            return (
+                <div className="app-container">
+                    <div className="app-header">
+                        <h1>So-VITS-SVC Fork</h1>
+                        <p>Voice Conversion & Real-time Inference</p>
+                    </div>
+
+                    <div className="app-content">
+                        {/* Left Column */}
+                        <div>
+                            {/* Paths Section */}
+                            <div className="section">
+                                <h2 className="section-title">Paths</h2>
+                                <div className="form-group">
+                                    <label>Model Path</label>
+                                    <input 
+                                        type="text" 
+                                        value={modelPath} 
+                                        onChange={(e) => setModelPath(e.target.value)}
+                                        placeholder="Path to model file (G_*.pth)"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Config Path</label>
+                                    <input 
+                                        type="text" 
+                                        value={configPath} 
+                                        onChange={(e) => setConfigPath(e.target.value)}
+                                        placeholder="Path to config.json"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Cluster Model Path (Optional)</label>
+                                    <input 
+                                        type="text" 
+                                        value={clusterModelPath} 
+                                        onChange={(e) => setClusterModelPath(e.target.value)}
+                                        placeholder="Path to kmeans.pt (optional)"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Common Settings Section */}
+                            <div className="section">
+                                <h2 className="section-title">Common Settings</h2>
+                                <div className="form-group">
+                                    <label>Speaker</label>
+                                    <select value={speaker} onChange={(e) => setSpeaker(e.target.value)}>
+                                        {speakers.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Silence Threshold (dB)</label>
+                                    <input 
+                                        type="range" 
+                                        min="-60" 
+                                        max="0" 
+                                        step="0.1"
+                                        value={silenceThreshold} 
+                                        onChange={(e) => setSilenceThreshold(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{silenceThreshold.toFixed(1)} dB</span>
+                                </div>
+                                {!autoPredictF0 && (
+                                    <div className="form-group">
+                                        <label>Pitch (12 = 1 octave)</label>
+                                        <input 
+                                            type="range" 
+                                            min="-36" 
+                                            max="36" 
+                                            step="1"
+                                            value={transpose} 
+                                            onChange={(e) => setTranspose(parseInt(e.target.value))}
+                                        />
+                                        <span className="slider-value">{transpose}</span>
+                                    </div>
+                                )}
+                                <div className="checkbox-group">
+                                    <input 
+                                        type="checkbox" 
+                                        id="autoPredictF0"
+                                        checked={autoPredictF0} 
+                                        onChange={(e) => setAutoPredictF0(e.target.checked)}
+                                    />
+                                    <label htmlFor="autoPredictF0">Auto predict F0 (Pitch may become unstable in real-time)</label>
+                                </div>
+                                <div className="form-group">
+                                    <label>F0 Prediction Method</label>
+                                    <select value={f0Method} onChange={(e) => setF0Method(e.target.value)}>
+                                        <option value="crepe">crepe</option>
+                                        <option value="crepe-tiny">crepe-tiny</option>
+                                        <option value="parselmouth">parselmouth</option>
+                                        <option value="dio">dio</option>
+                                        <option value="harvest">harvest</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Cluster Infer Ratio</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="1" 
+                                        step="0.01"
+                                        value={clusterInferRatio} 
+                                        onChange={(e) => setClusterInferRatio(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{clusterInferRatio.toFixed(2)}</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Noise Scale</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="1" 
+                                        step="0.01"
+                                        value={noiseScale} 
+                                        onChange={(e) => setNoiseScale(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{noiseScale.toFixed(2)}</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Pad Seconds</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="1" 
+                                        step="0.01"
+                                        value={padSeconds} 
+                                        onChange={(e) => setPadSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{padSeconds.toFixed(2)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Chunk Seconds</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="3" 
+                                        step="0.01"
+                                        value={chunkSeconds} 
+                                        onChange={(e) => setChunkSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{chunkSeconds.toFixed(2)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Max Chunk Seconds (0 to disable)</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="240" 
+                                        step="1"
+                                        value={maxChunkSeconds} 
+                                        onChange={(e) => setMaxChunkSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{maxChunkSeconds.toFixed(0)}s</span>
+                                </div>
+                                <div className="checkbox-group">
+                                    <input 
+                                        type="checkbox" 
+                                        id="absoluteThresh"
+                                        checked={absoluteThresh} 
+                                        onChange={(e) => setAbsoluteThresh(e.target.checked)}
+                                    />
+                                    <label htmlFor="absoluteThresh">Absolute threshold (ignored in real-time)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column */}
+                        <div>
+                            {/* File Settings Section */}
+                            <div className="section">
+                                <h2 className="section-title">File Inference</h2>
+                                {statusMessage && (
+                                    <div className={`status-message status-${statusType}`}>
+                                        {statusMessage}
+                                    </div>
+                                )}
+                                <div className="form-group">
+                                    <label>Input Audio Path</label>
+                                    <input 
+                                        type="text" 
+                                        value={inputPath} 
+                                        onChange={(e) => setInputPath(e.target.value)}
+                                        placeholder="Path to input audio file"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Output Audio Path</label>
+                                    <input 
+                                        type="text" 
+                                        value={outputPath} 
+                                        onChange={(e) => setOutputPath(e.target.value)}
+                                        placeholder="Path to save output (auto-generated if empty)"
+                                    />
+                                </div>
+                                <div className="checkbox-group">
+                                    <input 
+                                        type="checkbox" 
+                                        id="autoPlay"
+                                        checked={autoPlay} 
+                                        onChange={(e) => setAutoPlay(e.target.checked)}
+                                    />
+                                    <label htmlFor="autoPlay">Auto play after inference</label>
+                                </div>
+                            </div>
+
+                            {/* Real-time Settings Section */}
+                            <div className="section">
+                                <h2 className="section-title">Real-time Inference</h2>
+                                <div className="form-group">
+                                    <label>Crossfade Seconds</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="0.6" 
+                                        step="0.001"
+                                        value={crossfadeSeconds} 
+                                        onChange={(e) => setCrossfadeSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{crossfadeSeconds.toFixed(3)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Block Seconds</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="3" 
+                                        step="0.001"
+                                        value={blockSeconds} 
+                                        onChange={(e) => setBlockSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{blockSeconds.toFixed(3)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Additional Infer Seconds (Before)</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="2" 
+                                        step="0.001"
+                                        value={additionalInferBeforeSeconds} 
+                                        onChange={(e) => setAdditionalInferBeforeSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{additionalInferBeforeSeconds.toFixed(3)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Additional Infer Seconds (After)</label>
+                                    <input 
+                                        type="range" 
+                                        min="0" 
+                                        max="2" 
+                                        step="0.001"
+                                        value={additionalInferAfterSeconds} 
+                                        onChange={(e) => setAdditionalInferAfterSeconds(parseFloat(e.target.value))}
+                                    />
+                                    <span className="slider-value">{additionalInferAfterSeconds.toFixed(3)}s</span>
+                                </div>
+                                <div className="form-group">
+                                    <label>Real-time Algorithm</label>
+                                    <select value={realtimeAlgorithm} onChange={(e) => setRealtimeAlgorithm(e.target.value)}>
+                                        <option value="1">1 (Divide constantly)</option>
+                                        <option value="2">2 (Divide by speech)</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Input Device</label>
+                                    <select value={inputDevice} onChange={(e) => setInputDevice(e.target.value)}>
+                                        {inputDevices.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Output Device</label>
+                                    <select value={outputDevice} onChange={(e) => setOutputDevice(e.target.value)}>
+                                        {outputDevices.map((d, i) => <option key={i} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                                <div className="checkbox-group">
+                                    <input 
+                                        type="checkbox" 
+                                        id="passthroughOriginal"
+                                        checked={passthroughOriginal} 
+                                        onChange={(e) => setPassthroughOriginal(e.target.checked)}
+                                    />
+                                    <label htmlFor="passthroughOriginal">Passthrough original (for latency check)</label>
+                                </div>
+                                <button className="btn btn-secondary btn-small" onClick={loadDevices}>
+                                    Refresh Devices
+                                </button>
+                                <div className="notes-box">
+                                    <strong>Notes:</strong>
+                                    In Real-time Inference:<br/>
+                                    • Setting F0 prediction to 'crepe' may cause performance issues<br/>
+                                    • Auto Predict F0 must be turned off<br/>
+                                    If audio sounds mumbly/choppy:<br/>
+                                    • Increase Block seconds if inference is too slow<br/>
+                                    • Decrease Silence threshold if mic input is low
+                                </div>
+                            </div>
+
+                            {/* Presets Section */}
+                            <div className="section">
+                                <h2 className="section-title">Presets</h2>
+                                <div className="preset-group">
+                                    <select 
+                                        value={selectedPreset} 
+                                        onChange={(e) => {
+                                            setSelectedPreset(e.target.value);
+                                            applyPreset(e.target.value);
+                                        }}
+                                    >
+                                        {Object.keys(presets).map(name => (
+                                            <option key={name} value={name}>{name}</option>
+                                        ))}
+                                    </select>
+                                    <button className="btn btn-danger btn-small" onClick={handleDeletePreset}>
+                                        Delete
+                                    </button>
+                                </div>
+                                <div className="preset-group">
+                                    <input 
+                                        type="text" 
+                                        value={newPresetName} 
+                                        onChange={(e) => setNewPresetName(e.target.value)}
+                                        placeholder="New preset name"
+                                    />
+                                    <button className="btn btn-success btn-small" onClick={handleAddPreset}>
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Actions Section */}
+                            <div className="section">
+                                <div className="checkbox-group">
+                                    <input 
+                                        type="checkbox" 
+                                        id="useGpu"
+                                        checked={useGpu} 
+                                        onChange={(e) => setUseGpu(e.target.checked)}
+                                    />
+                                    <label htmlFor="useGpu">Use GPU</label>
+                                </div>
+                                <div className="button-group">
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={handleInfer}
+                                        disabled={isInferring}
+                                    >
+                                        {isInferring ? 'Inferring...' : 'Infer'}
+                                    </button>
+                                    <button 
+                                        className="btn btn-success" 
+                                        onClick={handleStartVC}
+                                        disabled={isVCRunning}
+                                    >
+                                        {isVCRunning ? 'VC Running...' : '(Re)Start Voice Changer'}
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger" 
+                                        onClick={handleStopVC}
+                                        disabled={!isVCRunning}
+                                    >
+                                        Stop Voice Changer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

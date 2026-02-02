@@ -134,10 +134,10 @@ def train(
 @cli.command()
 def gui():
     """
-    Opens GUI
+    Opens Web-based GUI
     for conversion and realtime inference
     """
-    from .gui import main
+    from .gui_web import main
 
     main()
 
