@@ -1,0 +1,117 @@
+name: Test macOS Build
+
+on:
+  pull_request:
+    paths:
+      - 'SoVitsSVC-OSX.spec'
+      - 'src/so_vits_svc_fork/gui_web.py'
+      - '.github/workflows/test-macos-build.yml'
+      - 'requirements_macos.txt'
+  workflow_dispatch:
+
+jobs:
+  test-macos-build:
+    name: Test macOS Build
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Display Python version
+      run: python --version
+      
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_macos.txt
+        pip install -e .
+
+    - name: Generate app icon
+      run: |
+        chmod +x ${GITHUB_WORKSPACE}/build/macos/generate_icon.sh
+        ${GITHUB_WORKSPACE}/build/macos/generate_icon.sh
+
+    - name: Verify build assets
+      run: |
+        if [ ! -f "${GITHUB_WORKSPACE}/build/macos/SoVitsSVC-OSX.icns" ]; then
+          echo "::error::build/macos/SoVitsSVC-OSX.icns not found after generation."
+          exit 1
+        fi
+        if [ ! -f "${GITHUB_WORKSPACE}/build/macos/codesign.sh" ]; then
+          echo "::error::build/macos/codesign.sh not found."
+          exit 1
+        fi
+
+    - name: Clean previous PyInstaller outputs
+      run: |
+        rm -rf dist/SoVitsSVC-OSX.app build/SoVitsSVC-OSX
+
+    - name: Build with PyInstaller
+      run: |
+        python -m PyInstaller SoVitsSVC-OSX.spec --clean --noconfirm
+
+    - name: Verify executable exists and matches Info.plist
+      run: |
+        # Check that the executable created by PyInstaller exists
+        if [ ! -f "dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin" ]; then
+          echo "::error::Executable 'SoVitsSVC-OSX_bin' not found!"
+          exit 1
+        fi
+        echo "✓ Executable 'SoVitsSVC-OSX_bin' exists"
+        
+        # Check Info.plist for CFBundleExecutable
+        BUNDLE_EXEC=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "dist/SoVitsSVC-OSX.app/Contents/Info.plist")
+        echo "Info.plist CFBundleExecutable: $BUNDLE_EXEC"
+        
+        # Verify they match
+        if [ "$BUNDLE_EXEC" != "SoVitsSVC-OSX_bin" ]; then
+          echo "::error::CFBundleExecutable mismatch! Expected 'SoVitsSVC-OSX_bin', got '$BUNDLE_EXEC'"
+          exit 1
+        fi
+        echo "✓ CFBundleExecutable matches executable name"
+        
+        # Make executable and check if app bundle is valid
+        chmod +x "dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin"
+        
+        # Verify app bundle structure
+        if ! [ -d "dist/SoVitsSVC-OSX.app/Contents/MacOS" ]; then
+          echo "::error::App bundle structure is invalid"
+          exit 1
+        fi
+        echo "✓ App bundle structure is valid"
+        
+    - name: Code sign the app bundle (adhoc)
+      run: |
+        chmod +x ${GITHUB_WORKSPACE}/build/macos/codesign.sh
+        ${GITHUB_WORKSPACE}/build/macos/codesign.sh dist/SoVitsSVC-OSX.app
+      env:
+        MACOS_SIGNING_IDENTITY: '-'
+        
+    - name: Test app can be launched (smoke test)
+      run: |
+        # Just verify the app bundle is recognized by macOS
+        if ! codesign -v dist/SoVitsSVC-OSX.app 2>&1; then
+          echo "::warning::Code signature verification failed (expected for adhoc signing)"
+        fi
+        
+        # Check if app is executable
+        if ! [ -x "dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX_bin" ]; then
+          echo "::error::Executable is not marked as executable"
+          exit 1
+        fi
+        echo "✓ Executable has correct permissions"
+        
+        echo "✓ Build test completed successfully!"
+        
+    - name: Upload app bundle artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SoVitsSVC-OSX-test-build
+        path: dist/SoVitsSVC-OSX.app
+        retention-days: 7

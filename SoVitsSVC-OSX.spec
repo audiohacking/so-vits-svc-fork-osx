@@ -127,7 +127,7 @@ app = BUNDLE(
         'CFBundleDisplayName': 'so-vits-svc OSX',
         'CFBundleVersion': '1.0.0',
         'CFBundleShortVersionString': '1.0.0',
-        'CFBundleExecutable': app_name,
+        'CFBundleExecutable': f'{app_name}_bin',
         'NSHighResolutionCapable': True,
         'NSRequiresAquaSystemAppearance': False,
         'LSMinimumSystemVersion': '11.0',
