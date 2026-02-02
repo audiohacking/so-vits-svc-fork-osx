@@ -481,7 +481,13 @@
                 if (preset.block_seconds !== undefined) setBlockSeconds(preset.block_seconds);
                 if (preset.additional_infer_before_seconds !== undefined) setAdditionalInferBeforeSeconds(preset.additional_infer_before_seconds);
                 if (preset.additional_infer_after_seconds !== undefined) setAdditionalInferAfterSeconds(preset.additional_infer_after_seconds);
-                if (preset.realtime_algorithm !== undefined) setRealtimeAlgorithm(preset.realtime_algorithm.charAt(0));
+                if (preset.realtime_algorithm !== undefined) {
+                    // Extract number from string like "1 (Divide constantly)"
+                    const alg = typeof preset.realtime_algorithm === 'string' 
+                        ? preset.realtime_algorithm.charAt(0) 
+                        : preset.realtime_algorithm.toString();
+                    setRealtimeAlgorithm(alg);
+                }
                 if (preset.passthrough_original !== undefined) setPassthroughOriginal(preset.passthrough_original);
                 if (preset.use_gpu !== undefined) setUseGpu(preset.use_gpu);
                 if (preset.auto_play !== undefined) setAutoPlay(preset.auto_play);
@@ -526,7 +532,7 @@
                     if (response.ok) {
                         showStatus('Inference completed successfully!', 'success');
                     } else {
-                        showStatus(`Inference failed: ${data.error || 'Unknown error'}`, 'error');
+                        showStatus(`Inference failed: ${data.detail || data.error || 'Unknown error'}`, 'error');
                     }
                 } catch (error) {
                     showStatus(`Error: ${error.message}`, 'error');
@@ -572,7 +578,7 @@
                     if (response.ok) {
                         showStatus('Voice changer started!', 'success');
                     } else {
-                        showStatus(`Failed to start: ${data.error || 'Unknown error'}`, 'error');
+                        showStatus(`Failed to start: ${data.detail || data.error || 'Unknown error'}`, 'error');
                         setIsVCRunning(false);
                     }
                 } catch (error) {
@@ -823,7 +829,7 @@
                                         max="240" 
                                         step="1"
                                         value={maxChunkSeconds} 
-                                        onChange={(e) => setMaxChunkSeconds(parseFloat(e.target.value))}
+                                        onChange={(e) => setMaxChunkSeconds(parseInt(e.target.value))}
                                     />
                                     <span className="slider-value">{maxChunkSeconds.toFixed(0)}s</span>
                                 </div>

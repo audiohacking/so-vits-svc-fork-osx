@@ -28,9 +28,9 @@ def load_presets() -> dict:
     """Load presets from default and user files."""
     defaults = json.loads(GUI_DEFAULT_PRESETS_PATH.read_text("utf-8"))
     users = json.loads(GUI_PRESETS_PATH.read_text("utf-8")) if GUI_PRESETS_PATH.exists() else {}
-    # priority: defaults > users
-    # order: defaults -> users
-    return {**defaults, **users, **defaults}
+    # priority: users > defaults (users override defaults)
+    # order: defaults -> users (defaults listed first, then user presets)
+    return {**defaults, **users}
 
 
 def save_presets(presets: dict) -> None:

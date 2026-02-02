@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import multiprocessing
 import threading
+import time
 from logging import getLogger
 
+import requests
 import uvicorn
 import webview
 
@@ -16,6 +18,21 @@ LOG = getLogger(__name__)
 def start_server(app, host: str = "127.0.0.1", port: int = 5173):
     """Start the FastAPI server in a separate thread."""
     uvicorn.run(app, host=host, port=port, log_level="info")
+
+
+def wait_for_server(url: str, timeout: int = 10) -> bool:
+    """Wait for the server to become available."""
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            response = requests.get(url, timeout=1)
+            if response.status_code == 200:
+                LOG.info("Server is ready!")
+                return True
+        except requests.exceptions.RequestException:
+            pass
+        time.sleep(0.1)
+    return False
 
 
 def main():
@@ -36,15 +53,16 @@ def main():
     )
     server_thread.start()
 
-    # Wait a bit for server to start
-    import time
-
-    time.sleep(1)
+    # Wait for server to be ready with health check
+    url = f"http://{host}:{port}"
+    if not wait_for_server(url):
+        LOG.error("Server failed to start within timeout period")
+        return
 
     # Create and start webview window
     window = webview.create_window(
         title=f"So-VITS-SVC Fork v{__version__}",
-        url=f"http://{host}:{port}",
+        url=url,
         width=1400,
         height=900,
         resizable=True,
