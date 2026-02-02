@@ -18,7 +18,7 @@ a = Analysis(
     ['src/so_vits_svc_fork/gui.py'],
     pathex=[str(project_root / 'src')],
     binaries=[],
-    datas=[
+    data=[
         # Include the default GUI presets
         ('src/so_vits_svc_fork/default_gui_presets.json', 'so_vits_svc_fork'),
         # Include config templates
