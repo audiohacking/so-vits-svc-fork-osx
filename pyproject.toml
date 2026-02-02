@@ -71,6 +71,12 @@ docs = [
   "sphinx>=4; python_version>='3.11'",
   "sphinx-autobuild>=2025,<2026; python_version>='3.11'",
 ]
+macos = [
+  # PyObjC is required for pywebview on macOS (Cocoa backend)
+  "pyobjc-core>=10.0; sys_platform=='darwin'",
+  "pyobjc-framework-Cocoa>=10.0; sys_platform=='darwin'",
+  "pyobjc-framework-WebKit>=10.0; sys_platform=='darwin'",
+]
 
 [tool.ruff]
 line-length = 150

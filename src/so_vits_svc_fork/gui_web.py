@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+# NOTE: On macOS, pywebview requires PyObjC to access the native Cocoa framework.
+# Ensure PyObjC is installed: pip install pyobjc-core pyobjc-framework-Cocoa pyobjc-framework-WebKit
+# This is automatically handled when installing from requirements_macos.txt
+
 import multiprocessing
 import sys
 import threading

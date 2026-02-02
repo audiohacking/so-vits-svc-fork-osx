@@ -20,12 +20,14 @@ This guide explains how to build the so-vits-svc-fork OSX application locally or
 # Install system dependencies
 brew install imagemagick
 
-# Install Python dependencies
+# Install Python dependencies (includes PyObjC for pywebview on macOS)
 pip install -r requirements_macos.txt
 
 # Install the package in development mode
 pip install -e .
 ```
+
+**Important for macOS**: The `requirements_macos.txt` file includes PyObjC dependencies (`pyobjc-core`, `pyobjc-framework-Cocoa`, `pyobjc-framework-WebKit`) which are required for pywebview to work with the native macOS Cocoa framework. These dependencies are automatically installed when you use `requirements_macos.txt`.
 
 ## Local Build Process
 
@@ -201,6 +203,17 @@ For distribution:
 - Check Console.app for error messages
 - Verify the executable is properly set: `ls -l dist/SoVitsSVC-OSX.app/Contents/MacOS/`
 - Test from terminal: `dist/SoVitsSVC-OSX.app/Contents/MacOS/SoVitsSVC-OSX`
+
+### Import Error at Startup (Line 12 or 19 in gui_web.py)
+
+If you see an error like `ModuleNotFoundError: No module named 'webview'` or similar at line 12/19:
+
+- This typically means PyObjC dependencies are missing
+- Solution: Reinstall from requirements: `pip install -r requirements_macos.txt`
+- Or install PyObjC manually: `pip install "pyobjc-core>=10.0" "pyobjc-framework-Cocoa>=10.0" "pyobjc-framework-WebKit>=10.0"`
+- When building with PyInstaller, ensure hidden imports in `SoVitsSVC-OSX.spec` include the PyObjC modules
+
+The pywebview library requires PyObjC on macOS to access the native Cocoa framework for window creation.
 
 ## Advanced Configuration
 

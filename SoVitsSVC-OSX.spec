@@ -74,6 +74,13 @@ a = Analysis(
         'rich',
         'tqdm',
         'requests',
+        # macOS-specific: PyObjC modules for pywebview Cocoa backend
+        'objc',
+        'Foundation',
+        'AppKit',
+        'WebKit',
+        'PyObjCTools',
+        'PyObjCTools.AppHelper',
     ],
     hookspath=[],
     hooksconfig={},
