@@ -69,11 +69,8 @@ jobs:
         # ghostscript for imagemagick delegate support
         brew install ghostscript
         # fonts for imagemagick text rendering
-        brew tap homebrew/cask-fonts
-        # Font installation may fail on some runners, but it's optional
-        if ! brew install --cask font-helvetica-neue; then
-          echo "::warning::Failed to install font-helvetica-neue. ImageMagick will use fallback fonts."
-        fi
+        # font-helvetica-neue tap deprecated, fallback or skip installation
+        echo "::warning::Skipping font-helvetica-neue install. The tap is deprecated (homebrew/cask-fonts)."
         
     - name: Install Python dependencies
       run: |
