@@ -1,6 +1,39 @@
-# SoftVC VITS Singing Voice Conversion Fork
+# SoftVC VITS Singing Voice Conversion Fork - macOS Edition
 
 [简体中文](README_zh_CN.md)
+
+## 🍎 macOS Native App with Apple Metal MPS Support
+
+This is a special fork optimized for macOS with **Apple Metal Performance Shaders (MPS) GPU acceleration**. We provide a native macOS application for the best experience on Mac.
+
+### Download macOS App
+
+<a href="https://github.com/audiohacking/so-vits-svc-fork-osx/releases/latest">
+  <img src="https://img.shields.io/badge/Download-macOS%20App-blue?style=for-the-badge&logo=apple" alt="Download macOS App">
+</a>
+
+**Features:**
+- 🚀 Native Apple Silicon (M1/M2/M3) optimization with MPS GPU acceleration
+- 🎵 Real-time voice conversion with low latency
+- 🖥️ Native macOS GUI built with PySimpleGUI
+- 📦 Easy installation via DMG package
+- 🎙️ Microphone and audio device support
+- 🔧 Model training support
+- 🎨 Dark mode support
+
+**Quick Start:**
+1. Download the DMG from the [releases page](https://github.com/audiohacking/so-vits-svc-fork-osx/releases)
+2. Open the DMG and drag the app to Applications
+3. Launch and start converting!
+
+**Build Locally:**
+```bash
+./local_build.sh
+```
+
+See [BUILD_MACOS.md](docs/BUILD_MACOS.md) for detailed build instructions.
+
+---
 
 <p align="center">
   <a href="https://github.com/voicepaw/so-vits-svc-fork/actions/workflows/ci.yml?query=branch%3Amain">
