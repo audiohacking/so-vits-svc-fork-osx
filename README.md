@@ -31,10 +31,16 @@ This is a special fork optimized for macOS with **Apple Metal Performance Shader
 **Build Locally:**
 
 ```bash
+# Install dependencies (includes PyObjC for macOS)
+pip install -r requirements_macos.txt
+
+# Build the app
 ./local_build.sh
 ```
 
 See [BUILD_MACOS.md](docs/BUILD_MACOS.md) for detailed build instructions.
+
+> **Note**: On macOS, pywebview requires PyObjC to work with the native Cocoa framework. This is automatically installed when using `requirements_macos.txt`.
 
 ---
 

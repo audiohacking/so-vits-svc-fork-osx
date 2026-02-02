@@ -27,5 +27,11 @@ tqdm-joblib>=0.0.4
 transformers>=4.56.1
 uvicorn>=0.34.0
 
+# macOS-specific: PyObjC is required for pywebview on macOS
+# pywebview uses the Cocoa backend which requires these frameworks
+pyobjc-core>=10.0
+pyobjc-framework-Cocoa>=10.0
+pyobjc-framework-WebKit>=10.0
+
 # PyInstaller for creating the macOS app bundle
 pyinstaller>=6.0.0
